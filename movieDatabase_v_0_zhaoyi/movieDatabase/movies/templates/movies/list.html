@@ -1,0 +1,10 @@
+{% if movie_list %}
+	<ul>
+	{% for movie in movie_list %}
+		<li><a>{{ movie.moviename }}</a></li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>Sorry, no records.</p>
+{% endif %}
+
