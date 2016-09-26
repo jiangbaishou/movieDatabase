@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from .models import MatchAll, MoviePeople, MovieCompany, MovieDetail, MovieDaily
+import json
 
 # Create your views here.
 def index(request):
@@ -64,7 +65,15 @@ def movie_daily(request, movieId):
 	"""
 	try:
 		movieDaily = MovieDaily.objects.filter(movieid = int(movieId))
-		movieDaily = serializers.serialize('json', movieDaily)
+		#we want to merge with MovieDetail in order to get a movie's gross
+		try:
+			movieDetail = MovieDetail.objects.get(pk = int(movieId))
+			movieGross = movieDetail.gross
+		except ObjectDoesNotExist:
+			movieGross = None
+		#print(movieGross)
+		#add gross into movieDaily
+		movieDaily = json.dumps({'data': serializers.serialize('json', movieDaily), 'movieGross': movieGross})
 	except Exception as e:
 		print(e)
 		movieDaily = None
