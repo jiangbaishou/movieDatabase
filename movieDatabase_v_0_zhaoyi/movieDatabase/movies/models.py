@@ -95,3 +95,27 @@ class MovieCompany(models.Model):
 		db_table = 'movie_company'
 #end of movie company
 
+
+#movie daily
+class MovieDaily(models.Model):
+    movieid = models.IntegerField(db_column='movieId', blank=True, null=True)  # Field name made lowercase.
+    maoyanid = models.IntegerField(db_column='maoyanId', blank=True, null=True)  # Field name made lowercase.
+    showdate = models.DateField(db_column='showDate', blank=True, null=True)  # Field name made lowercase.
+    sumboxoffice = models.FloatField(db_column='sumBoxoffice', blank=True, null=True)  # Field name made lowercase.
+    dailyboxoffice = models.FloatField(db_column='dailyBoxoffice', blank=True, null=True)  # Field name made lowercase.
+    totalshow = models.FloatField(db_column='totalShow', blank=True, null=True)  # Field name made lowercase.
+    totalviewer = models.FloatField(db_column='totalViewer', blank=True, null=True)  # Field name made lowercase.
+    attendrate = models.FloatField(db_column='attendRate', blank=True, null=True)  # Field name made lowercase.
+    avgpeople = models.FloatField(db_column='avgPeople', blank=True, null=True)  # Field name made lowercase.
+    avgprice = models.FloatField(db_column='avgPrice', blank=True, null=True)  # Field name made lowercase.
+    boxrate = models.FloatField(db_column='boxRate', blank=True, null=True)  # Field name made lowercase.
+    seatrate = models.FloatField(db_column='seatRate', blank=True, null=True)  # Field name made lowercase.
+    showrate = models.FloatField(db_column='showRate', blank=True, null=True)  # Field name made lowercase.
+    totalbox = models.FloatField(db_column='totalBox', blank=True, null=True)  # Field name made lowercase.
+    timestamp = models.BigIntegerField(blank=True, null=True)
+    id = models.IntegerField(db_column = 'id', primary_key = True)
+
+    class Meta:
+        managed = False
+        db_table = 'movie_daily'
+#end of movie daily

@@ -7,5 +7,7 @@ urlpatterns = [url(r'^$', views.index, name = 'index'),
 				#movie people
 				url(r'^movie_people/(?P<movieId>[0-9]+)/$', views.movie_people, name = 'movie_people'),
 				#movie company
-				url(r'^movie_company/(?P<movieId>[0-9]+)/$', views.movie_company, name = 'movie_company')]
+				url(r'^movie_company/(?P<movieId>[0-9]+)/$', views.movie_company, name = 'movie_company'),
+				#movie daily
+				url(r'^movie_daily/(?P<movieId>[0-9]+)/$', views.movie_daily, name = 'movie_daily')]
 

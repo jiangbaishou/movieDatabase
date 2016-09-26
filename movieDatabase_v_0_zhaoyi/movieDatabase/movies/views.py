@@ -5,7 +5,7 @@ from django.template import loader
 from django.shortcuts import render, get_object_or_404
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
-from .models import MatchAll, MoviePeople, MovieCompany, MovieDetail
+from .models import MatchAll, MoviePeople, MovieCompany, MovieDetail, MovieDaily
 
 # Create your views here.
 def index(request):
@@ -55,4 +55,18 @@ def movie_company(request, movieId):
 		movieCompany = None
 	return HttpResponse(movieCompany, content_type = 'application/json')
 #end of movie company
-		
+
+
+#movie_daily
+def movie_daily(request, movieId):
+	"""
+	Given a movieId, return movie daily data in json format, if not exists, return None.
+	"""
+	try:
+		movieDaily = MovieDaily.objects.filter(movieid = int(movieId))
+		movieDaily = serializers.serialize('json', movieDaily)
+	except Exception as e:
+		print(e)
+		movieDaily = None
+	return HttpResponse(movieDaily, content_type = 'application/json')
+#end of movie_daily
