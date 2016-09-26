@@ -23,7 +23,7 @@ def data_deal(dateFrame):
     return(json_Final)
 
 def movie_data_query(data1):
-    conn = pymysql.Connect(host = '192.168.99.150',port = 3306,user = 'root',passwd = 'bi112233',db = 'gjdyzjb',charset = 'utf8')
+    conn = pymysql.Connect(host = '',port = ,user = '',passwd = '',db = '',charset = 'utf8')
     #cur = conn.cursor()
     date_data = pandas.read_sql('select * from zzb_movieboxoffice where showDate = "' + data1 + '"',con = conn)
     conn.close()
