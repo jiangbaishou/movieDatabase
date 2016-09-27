@@ -1,0 +1,185 @@
+{% block doc %}
+<!DOCTYPE html>
+<html {% block html_attribs %}{% endblock html_attribs %}>
+    {% block html %}
+    <head>
+        {% block head %}
+		{% load static %}
+        <title>{% block title %}电影资料库{% endblock title %}</title>
+
+        {% block metas %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        {% endblock metas %}
+
+        {% block styles %}
+        <!-- semantic ui  -->
+        <link rel="stylesheet" type="text/css" href="{% static 'Semantic-UI-2.2.4/dist/semantic.min.css' %}">
+        <style type="text/css">
+            body {
+                margin-left: 20%;
+                margin-right: 20%;
+            }
+            .back-to-top {
+                display: none;
+                position: fixed;
+                right: 40px;
+                bottom: 50px;
+                font-family: iconFont;
+                font-size: 20px;
+                color:#666;
+                padding: 10px 15px 10px 15px;
+                background-color: rgba(00, 00,00,0.3);
+                border-radius: 5px; 
+            }
+            .back-to-top:hover {
+                cursor: pointer;
+            }
+
+			/* navbar */
+			#main-navbar .item {
+				font-weight: bold;
+				font-size: 12px;
+			}
+        </style>
+        {% endblock styles %}
+        {% endblock head %}
+    </head>
+    <body {% block body_attribs %}{% endblock body_attribs %}>
+        {% block body %}
+        {% block navbar %}
+        <div class="ui tiny inverted eight item inverted navbar borderless menu" id="main-navbar">
+            <a class="item active" href="#">
+                影历
+            </a>
+            <a class="item" href="#">
+                影人
+            </a>
+            <a class="item" href="#">
+                排行榜
+            </a>
+            <div class="right menu">
+                <div class="item">
+                    <div class="ui fluid category search">
+                        <div class="ui icon input">
+                            <input class="prompt" type="text" placeholder="搜索电影..." name="movie_search" id="movie_search" >
+                            <i class="search icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        {% endblock navbar %}
+        {% block content %}
+        {% endblock content %}
+        {% block footer %}
+        <div class="ui cube shape back-to-top">
+            <i class="arrow circle up icon"></i>
+        </div>
+        {% endblock %}
+        
+        {% block scripts %}
+        <script src="{% static 'js/jquery-latest.js' %}"></script>
+        <script src="{% static 'Semantic-UI-2.2.4/dist/semantic.min.js' %}"></script>
+        <script type="text/javascript">
+            /* One required, one optional variable 
+            $.fn.api.settings.api = {
+                'search' : '/newPrograms/programs/search?q={query}',
+            };*/
+            $('.back-to-top').click(function () {
+                $("html, body").animate({
+                    scrollTop: 0
+                }, 400);
+                return false;
+            });
+
+			//navbar menu activation transformation
+  			$('.ui.navbar.menu')
+			    .on('click', '.item', function() {
+			      if(!$(this).hasClass('dropdown')) {
+			        $(this)
+			          .addClass('active')
+			          .siblings('.item')
+            		  .removeClass('active');
+			      }
+		    });
+
+            //autocomplete
+            // initializes with default endpoint /search/{query}
+            $('.ui.search')
+                .search({
+                apiSettings: {
+                    url: "{% url 'movies:movie_search' %}?q={query}"
+                },
+                fields: {
+                    title: 'moviename',
+                    description: 'movieid'
+                },
+                minCharacters: 1,
+                type: 'list',
+                templates: {
+                    list: function (response) {
+                        var html = '';
+                        //console.log(response);
+                        //console.log(response.results);
+                        if (response.results !== 'undefined') {
+                            $.each(response.results, function (index, result) {
+                                html += '' + '<div class="result">' + '<small class="name"><a href="/movies/movie_detail/' + result.movieid + '">'+ result.moviename + '</a></small>' + '</div>';
+                            });
+                            return html;
+                        } else {
+                            html += '搜索不到这个电影!';
+                            return html;
+                        }
+                        return false;
+                    }
+                }
+            })
+            ;
+            
+            $(document).ready(function() {
+                //dropdown menu: to select which way to add a new program.
+                $('.ui.dropdown.item')
+                    .dropdown()
+                ;
+                
+                //ui modal
+                /*
+                $('.ui.modal')
+                    .modal('show')
+                ;
+                */
+                
+                //for beginning position for back to top
+                var height = $('body').height();
+                if(height > 10){
+                    $('.back-to-top').css({ 'display' : 'none'});
+                }
+
+                $(window).scroll(function () {
+                    var height = $('body').height(),
+                        scrollTop = $(window).scrollTop();
+                    if(scrollTop > 100)
+                    {
+                        $('.back-to-top').css({ 'position': 'fixed', 'bottom' : '50px' , 'display' : 'block'});
+                    }
+                    else
+                    {
+                        $('.back-to-top').css({ 'position': 'absolute', 'bottom': '-50px' , 'display' : 'none'});
+                    }
+                });
+            
+            } );
+            
+            //to close the message
+            //$('.message .close').on('click', function() { $(this).parent().hide(); });
+            
+        </script>
+        {% endblock scripts %}
+        {% endblock body %}
+    </body>
+    {% endblock html %}
+</html>
+{% endblock doc %}

@@ -9,22 +9,27 @@ from .models import MatchAll, MoviePeople, MovieCompany, MovieDetail, MovieDaily
 import json
 
 # Create your views here.
+#index page
 def index(request):
 	movieList = MatchAll.objects.filter(movieid__lte = 5)
 	return render(request, 'movies/list.html', {'movie_list': movieList})
+#end of index
 
 
 #movie_detail
 def movie_detail(request, movieId):
 	"""
-	Given a movieId, return movie detail data in json format, if not exists, return None.
+	#Given a movieId, return movie detail data in json format, if not exists, return None.
+	This is the page for movie detail, utilizing detail.html.
 	"""
 	try:
-		movieDetail = MovieDetail.objects.get(pk = int(movieId))
-		movieDetail = serializers.serialize('json', [movieDetail])
+		#.values() method make the result a dictionary object
+		movieDetail = MovieDetail.objects.values().get(pk = int(movieId))
+		#movieDetail = serializers.serialize('json', [movieDetail])
 	except ObjectDoesNotExist:
 		movieDetail = None
-	return HttpResponse(movieDetail, content_type = 'application/json')
+	#return HttpResponse(movieDetail, content_type = 'application/json')
+	return render(request, 'movies/detail.html', {'movieDetail': movieDetail})
 #end of movie_detail
 
 
@@ -79,3 +84,27 @@ def movie_daily(request, movieId):
 		movieDaily = None
 	return HttpResponse(movieDaily, content_type = 'application/json')
 #end of movie_daily
+
+
+#movie_search
+def movie_search(request):
+	"""
+	Given a movie name, we search it in MovieDetail. If exists, we return the similar movie list.
+	"""
+	search_text = request.GET.get('q') #in django, we don't have request.args.get as in Flask
+	try:
+		similarMovies = MovieDetail.objects.filter(moviename__icontains = str(search_text)) | MovieDetail.objects.filter(alias__icontains = str(search_text))
+		similarMovies = similarMovies.values_list('movieid', 'moviename')
+		search_results = []
+		for obj in similarMovies:
+			search_results.append({'moviename': obj[1], 'movieid': obj[0]})
+		#similarMovies = [obj.movieid, obj.moviename for obj in similarMovies]
+		#similarMovies = serializers.serialize('json', similarMovies)
+		#print(similarMovies)
+	except Exception as e:
+		print(e)
+		similarMovies = None
+	return HttpResponse(json.dumps({"results": search_results}), content_type = 'application/json')
+	#return JsonResponse(json.dumps(similarMovies), safe = True)
+#end of movie_search
+
