@@ -4,10 +4,6 @@
 	{{ movieDetail.moviename }}
 {% endblock %}
 
-{% block head %}
-<script src="/static/js/numeral.js"></script>
-{% endblock head %}
-
 
 {% block styles %}
 <style type="text/css">
@@ -197,21 +193,6 @@
 		float: right;
 	}
 
-
-	/* footer */
-	#footer {
-		color: #999;
-		padding 6px 0;
-		margin-top: 40px;
-		overflow: hidden;
-		zoom: 1;
-		border-top: 1px dashed #ddd;
-		clear: both;
-	}
-	.fleft {
-		float: left;
-	}
-
 </style>
 {% endblock %}
 
@@ -224,7 +205,7 @@
 		<div id="content">
 			<h1>
 				<span>{{ movieDetail.moviename }}</span>
-				<span>({{ movieDetail.releasedate|date:"Y-m-d" }})</span>
+				<span>({{ movieDetail.releasedate }})</span>
 			</h1>		
 			<div class="grid-16-8 clearfix">
 				<div class="article">
@@ -232,38 +213,33 @@
 						<div class="subjectwrap clearfix">
 							<div class="subject clearfix">
 								<div id="mainpic">
-									<img style="height:260px;">
+									<img style="height:260px;" src="http://www.cbooo.cn/moviepic/157125.jpg">
 								</div>
 								<div id="info">
 									<div id="info_director"></div>
 									<div id="info_actor"></div>
-									<span style="color: gray;">类型:&nbsp;&nbsp;</span><span>{{ movieDetail.genre }}</span><br>
-									<span style="color: gray;">制片国家/地区:&nbsp;&nbsp;</span><span>{{ movieDetail.country }}</span><br>
-									<span style="color: gray;">语言:</span>&nbsp;&nbsp;<span>{{ movieDetail.language }}</span><br>
-									<span style="color: gray;">上映日期:</span>&nbsp;&nbsp;<span>{{ movieDetail.releasedate|date:"Y-m-d" }}</span><br>
-									<span style="color: gray;">片长:</span>&nbsp;&nbsp;
-									<span id="duration">
-									{% if movieDetail.duration %}
-										<script type="text/javascript">
-											 document.getElementById('duration').innerHTML = numeral({{ movieDetail.duration }}).format('0,2') + '分钟';
-										</script>		
-									{% endif %}
-									</span>
-									<br>
-									<span style="color: gray;">又名:</span>&nbsp;&nbsp;<span>{{ movieDetail.alias }}</span><br>
+									<span>类型:&nbsp;</span>{{ movieDetail.genre }}<br>
+									<span>制片国家/地区:&nbsp;</span>{{ movieDetail.country }}<br>
+									<span>语言:</span>{{ movieDetail.language }}<br>
+									<span>上映日期:</span>{{ movieDetail.releasedate }}<br>
+									<span>片长:</span>{{ movieDetail.duration }}<br>
+									<span>又名:</span>{{ movieDetail.alias }}<br>
 								</div>
 							</div>
 							<div class="interest_sect1">
 								<div class="rating_logo">猫眼评分</div>
-								<div class="rating_wrap clearbox" id="maoyan_rating">
-									{% if movieDetail.maoyanratingscore %}
-									<script type="text/javascript">
-										document.getElementById('maoyan_rating').innerHTML = '<strong>' + numeral({{ movieDetail.maoyanratingscore }}).format('0.2') + '</strong><br><a>' + numeral({{ movieDetail.maoyanratingnum }}).format('0,2') + '人评价</a>';
-									</script>
-									{% endif %}
-								</div>	
-								<br>
-								<div class="rating_wrap clearbox" id="douban_rating"></div>
+								<div class="rating_wrap clearbox">
+									<div class="rating_self clearfix" typeof="v:Rating">
+							            <strong class="ll rating_num" property="v:average">{{ movieDetail.maoyanratingscore }}</strong>
+							            <span property="v:best" content="10.0"></span>
+							            <div class="rating_right ">
+							                <div class="ll bigstar40"></div>
+								                <div class="rating_sum">
+							                    <a href="collections" class="rating_people"><span property="v:votes">{{ movieDetail.maoyanratingnum }}</span>人评价</a>
+							                </div>
+							            </div>
+							        </div>								
+								</div>
 							</div>
 						</div>
 					</div>
@@ -285,12 +261,8 @@
 							</div>
 						</div>
 						<div id="companyInfo" style="display: block;">
-							<div id="company_production">
-								<h2>出品公司</h2>
-							</div>
-							<div id="company_distribution">
-								<h2>发行公司</h2>
-							</div>
+							<div id="company_production"></div>
+							<div id="company_distribution"></div>
 						</div>
 						<div id="dailyBoxoffice" style="display: none;">
 							
@@ -302,10 +274,8 @@
 							<div class="gender">
 								<h2>性别分布</h2>
 								<div class="bar-wrap">
-									{% if  movieDetail.male %}
 									<span id="bar-left" data-content="{{ movieDetail.male }}%" style="width: {{ movieDetail.male }}%"></span>
 							 		<span id="bar-right" data-content="{{ movieDetail.female }}%" style="width: {{ movieDetail.female }}%"></span>
-									{% endif %}
 								</div>
 							</div>
 							<div class="age">
@@ -314,13 +284,6 @@
 							</div>
 						</div>
 					</div>
-
-					<!-- Reference douban api for comments. -->
-					<div class="ui hidden divider"></div>
-					<div id="commnets-section-douban">
-
-					</div>
-
 				</div>
 				<div class="aside" style="left: 640px; position: static; bottom: 300px;">
 					<div class="boxoffice" style="margin-bottom: 10px;">
@@ -338,14 +301,9 @@
 				</div>
 			</div>
 		</div>
-		<div class="ui hidden divider"></div>
 
 		<!-- footer area. -->
-		<div id="footer">
-			<span class="fleft gray-link">
-				©2016 Wepiao Investment Group, all rights reserved
-			</span>
-		</div>
+		<div id="footer"></div>
 	</div>
 {% else %}
 	<p>抱歉，此影片无数据.</p>
@@ -389,7 +347,7 @@
 				//director
 				for (var i = 0; i < directors_array.length; i++){
 					if (i == 0){
-						$('#info_director').append('<span style="color: gray;">导演:&nbsp;&nbsp;</span><span><a href="#">' + directors_array[i]['name']  + '</a></span>');
+						$('#info_director').append('<span>导演:&nbsp;</span><span><a href="#">' + directors_array[i]['name']  + '</a></span>');
 					} else {
 						$('#info_director').append('<span><a href="#">' + ', ' + directors_array[i]['name']  + '</a></span>');
 					}
@@ -401,7 +359,7 @@
 				//actors
 				for (var i = 0; i < actors_array.length; i++){
 					if (i == 0){
-						$('#info_actor').append('<span style="color: gray;">主演:&nbsp;&nbsp;</span><span><a href="#">' + actors_array[i]['name']  + '</a></span>');
+						$('#info_actor').append('<span>主演:&nbsp;</span><span><a href="#">' + actors_array[i]['name']  + '</a></span>');
 					} else if (i > 3){ 
 						$('#info_actor').append('<span><a href="#" style="display: none;">' + ', ' + actors_array[i]['name']  + '</a></span>');
 					}
@@ -409,7 +367,7 @@
 						$('#info_actor').append('<span><a href="#">' + ', ' + actors_array[i]['name']  + '</a></span>');
 					}
 					if ( i == actors_array.length -1 && i > 3){
-						$('#info_actor').append('<a class="more-actor" title="更多主演" onClick="actor_spans = document.getElementById(\'info_actor\').getElementsByTagName(\'a\'); for(var i=0; i < actor_spans.length; i++){actor_spans[i].style.display = \'inline\';} document.getElementsByClassName(\'more-actor\')[0].style.display=\'none\';">, 更多...</a>');
+						$('#info_actor').append('<a href="javascript:;" class="more-actor" title="更多主演">, 更多...</a>');
 					}
 				}
 
@@ -417,102 +375,13 @@
 		});
 	}
 
-	//Get company info for this specific movie
-	function GetCompanies(){
-		$.ajax({
-			type: 'GET',
-			url: '/movies/movie_company/' + {{ movieDetail.movieid }} + '/',
-			cache: false,
-			success: function(data){
-				//Initialize production company array and distribution company array
-				var companies_production = [];
-				var companies_distribution = [];
-
-				for (var i = 0; i < data.length; i++) {
-					if(data[i]['fields']['role'] == 'production'){
-						companies_production.push({
-							'name': data[i]['fields']['company'],
-							'companyid': data[i]['fields']['companyid']
-						});						
-					}
-					if(data[i]['fields']['role'] == 'distributor'){
-						companies_distribution.push({
-							'name': data[i]['fields']['company'],
-							'companyid': data[i]['fields']['companyid']
-						});
-					}
-				}
-
-				//generate html
-				//production companies
-				for (var i = 0; i < companies_production.length; i++){
-					$('#company_production').append('<a href="#">' + companies_production[i]['name'] + '</a><br>');
-				}
-				//distribution companies
-				for (var i = 0; i < companies_distribution.length; i++){
-					$('#company_distribution').append('<a href="#">' + companies_production[i]['name'] + '</a><br>');
-				}
-			}
-		});	
-	}//end of GetCompanies
-
-	//Get info from douban via public api
-	/*Here we use jsonp to load data from douban via douban api, see details from http://borninsummer.com/2013/12/28/accessing-cross-site-data-with-jsonp/.*/
-	function GetDoubanApi() {
-		$.ajax({
-			type: 'GET',
-			url: "https://api.douban.com/v2/movie/subject/" + {{ movieDetail.doubanmovieid }}, //'/movies/movie_doubanApi/' + {{ movieDetail.doubanmovieid }} + '/',
-			cache: false,
-			async: false,
-			dataType: 'jsonp',
-			jsonp: 'callback',
-			success: function(json){
-				console.log(json);
-				//load image for this movie
-				$('#mainpic').html('');
-				$('#mainpic').append('<img style="height:260px;" src="' + json['images']['large'] + '">');
-
-				//douban rating and ratingNum
-				$('#douban_rating').append('<div class="rating_logo">豆瓣评分</div><strong>' + numeral(json['rating']['average']).format('0.2') + '</strong><br><a>' + numeral(json['ratings_count']).format('0,2') + '人评价</a>')
-			},
-			error: function(request, status, error){
-				console.log(error);
-				alert(status);
-				console.log('fuck');
-			},
-			always: function(request, status){
-				console.log(status);
-			}
-		});
-	
-	}//end of GetDoubanApi
-
-
-	//function GetDoubanApi_v2
-	function GetDoubanApi_v2() {
-		$.getJSON("https://api.douban.com/v2/movie/subject/" + {{ movieDetail.doubanmovieid }},
-			function(data){
-				console.log(data);
-			}
-		);
-	}//end of GetDoubanApi_v2
-
-
 	//document get ready
 	$(document).ready(function() {
-		//maoyan rating
-
 		//get people
 		GetPeople();
 
 		//tab transition
 		tabTransition();
-
-		//get companies
-		GetCompanies();
-
-		//get doubanApi
-		GetDoubanApi();
 	});
 
 	//age-chart

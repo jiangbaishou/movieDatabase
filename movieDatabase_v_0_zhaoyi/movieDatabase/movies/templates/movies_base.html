@@ -3,7 +3,7 @@
 <html {% block html_attribs %}{% endblock html_attribs %}>
     {% block html %}
     <head>
-        {% block head %}
+        {% block head %}{% endblock head %}
 		{% load static %}
         <title>{% block title %}电影资料库{% endblock title %}</title>
 
@@ -13,14 +13,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
         {% endblock metas %}
 
-        {% block styles %}
         <!-- semantic ui  -->
         <link rel="stylesheet" type="text/css" href="{% static 'Semantic-UI-2.2.4/dist/semantic.min.css' %}">
         <style type="text/css">
-            body {
-                margin-left: 20%;
-                margin-right: 20%;
-            }
             .back-to-top {
                 display: none;
                 position: fixed;
@@ -38,20 +33,24 @@
             }
 
 			/* navbar */
-			#main-navbar .item {
+			.ui.navbar.menu .item {
 				font-weight: bold;
-				font-size: 12px;
+				padding-left: 25px;
+				padding-right: 25px;
 			}
+
+			/* navbar left item only */
         </style>
+		{% block styles %}
         {% endblock styles %}
-        {% endblock head %}
     </head>
     <body {% block body_attribs %}{% endblock body_attribs %}>
         {% block body %}
         {% block navbar %}
-        <div class="ui tiny inverted eight item inverted navbar borderless menu" id="main-navbar">
-            <a class="item active" href="#">
-                影历
+		<nav class="ui mini menu inverted navbar page grid borderless" style="margin-bottom: 0px;">
+            <a href="#" class="brand item">电影资料库</a>
+			<a class="item active" href="#">
+				影历
             </a>
             <a class="item" href="#">
                 影人
@@ -69,7 +68,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+		</nav>
         <br>
         {% endblock navbar %}
         {% block content %}
@@ -80,9 +79,9 @@
         </div>
         {% endblock %}
         
-        {% block scripts %}
         <script src="{% static 'js/jquery-latest.js' %}"></script>
         <script src="{% static 'Semantic-UI-2.2.4/dist/semantic.min.js' %}"></script>
+		<script src="{% static 'js/numeral.js' %}"></script>
         <script type="text/javascript">
             /* One required, one optional variable 
             $.fn.api.settings.api = {
@@ -177,6 +176,7 @@
             //$('.message .close').on('click', function() { $(this).parent().hide(); });
             
         </script>
+		{% block scripts %}
         {% endblock scripts %}
         {% endblock body %}
     </body>

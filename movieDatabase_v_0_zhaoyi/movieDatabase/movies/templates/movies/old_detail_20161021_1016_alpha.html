@@ -1,0 +1,11 @@
+{% extends "movies_base.html" %}
+
+
+{% block content %}
+{% if movieDetail %}
+	{{ movieDetail }}
+	<p>{{ movieDetail.moviename }}</p>
+{% else %}
+	<p>抱歉，此影片无数据.</p>
+{% endif %}
+{% endblock %}

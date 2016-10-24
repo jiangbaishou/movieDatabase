@@ -7,6 +7,8 @@ from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from .models import MatchAll, MoviePeople, MovieCompany, MovieDetail, MovieDaily
 import json
+import requests
+
 
 # Create your views here.
 #index page
@@ -108,3 +110,20 @@ def movie_search(request):
 	#return JsonResponse(json.dumps(similarMovies), safe = True)
 #end of movie_search
 
+
+#movie_doubanApi
+def movie_doubanApi(request, doubanMovieId):
+	"""
+	By requesting douban api, we can get a lot of information we need.
+	Actually, by using douban api and jsonp method, this has become a history.
+	"""
+	try:
+		data = requests.get('https://api.douban.com/v2/movie/subject/' + str(doubanMovieId))
+		data = json.dumps(data.text)
+		#print(data.content)
+	except:
+		data = {}
+
+	#print(data)	
+	return HttpResponse(data, content_type = 'application/json')
+#end of movie_doubanApi

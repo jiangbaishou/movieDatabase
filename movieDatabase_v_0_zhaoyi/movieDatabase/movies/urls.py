@@ -12,5 +12,7 @@ urlpatterns = [url(r'^$', views.index, name = 'index'),
 				#movie daily
 				url(r'^movie_daily/(?P<movieId>[0-9]+)/$', views.movie_daily, name = 'movie_daily'),
 				#movie search
-				url(r'^movie_search/$', views.movie_search, name = 'movie_search')]
+				url(r'^movie_search/$', views.movie_search, name = 'movie_search'),
+				#movie doubanApi
+				url(r'^movie_doubanApi/(?P<doubanMovieId>[0-9]+)/$', views.movie_doubanApi, name = 'movie_doubanApi')]
 
