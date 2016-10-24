@@ -293,7 +293,8 @@
 							</div>
 						</div>
 						<div id="dailyBoxoffice" style="display: none;">
-							
+							<h2>分天票房，排片和人次数据</h2>	
+							<div id="dailyBoxoffice-chart" style="width: 1000px; height: 400px;"></div>
 						</div>
 						<div id="dailyShow" style="display: none;">
 							
@@ -325,7 +326,15 @@
 				<div class="aside" style="left: 640px; position: static; bottom: 300px;">
 					<div class="boxoffice" style="margin-bottom: 10px;">
 						<h2>票房数据</h2>
-						<span>总票房:&nbsp;&nbsp;<i>{{ movieDetail.gross }}</i>万元</span>
+						<span>总票房:&nbsp;&nbsp;
+							<i id="maoyan_boxoffice_gross">
+								{% if movieDetail.gross %}
+									<script type="text/javascript">
+										document.getElementById('maoyan_boxoffice_gross').innerHTML = numeral({{ movieDetail.gross }}).format('0,.2');
+									</script>
+								{% endif %}
+							</i>万
+						</span>
 					</div>
 					<br>
 					<div class="tags" style="margin-top: 10px;">
@@ -343,7 +352,7 @@
 		<!-- footer area. -->
 		<div id="footer">
 			<span class="fleft gray-link">
-				©2016 Wepiao Investment Group, all rights reserved
+				©2016 Weiying Institute Of Research, all rights reserved
 			</span>
 		</div>
 	</div>
@@ -513,12 +522,15 @@
 
 		//get doubanApi
 		GetDoubanApi();
+
+		//get daily boxoffice
+		GetDailyBoxoffice();
 	});
 
 	//age-chart
 	var age_chart = echarts.init(document.getElementById('age-chart'));
 
-	var option = {
+	var age_chart_option = {
 		title: {
 			text: '用户年龄分布',
 			subtext: '数据来源: 猫眼',
@@ -554,7 +566,124 @@
 		}]
 	};
 
-	age_chart.setOption(option);
+	age_chart.setOption(age_chart_option);
+	
+	
+	//dailyBoxoffice-chart
+	function GetDailyBoxoffice() {
+		$.ajax({
+			type: 'GET',
+			url: '/movies/movie_daily/' + {{ movieDetail.movieid }} + '/',
+			cache: false,
+			success: function(data) {
+				console.log(JSON.parse(data['data'])[0]);
+				
+				//initialize
+				var dates = [];
+				var boxoffice = [];
+
+				var dailyBoxoffice_chart = echarts.init(document.getElementById('dailyBoxoffice-chart'));
+				var dailyBoxoffice_colors = ['#5793f3', '#d14a61', '#675bba'];
+				var dailyBoxoffice_chart_option = {
+					color: dailyBoxoffice_colors,
+					tooltip: {
+						trigger: 'axis',
+					},
+					grid: {
+						right: '20%'
+					},
+					toolbox: {
+						feature: {
+							dataView: {show: true, readOnly: false},
+							restore: {show: true},
+							saveAsImage: {show: true}
+						}	
+					},
+					legend: {
+						data:['蒸发量','降水量','平均温度']
+					},
+					xAxis: [
+						{
+							type: 'category',
+							axisTick: {
+								alignWithLabel: true
+							},
+							data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+						}
+					],
+					yAxis: [
+						{
+							type: 'value',
+							name: '蒸发量',
+							min: 0,
+							max: 250,
+							position: 'right',
+							axisLine: {
+								lineStyle: {
+									color: dailyBoxoffice_colors[0]
+								}
+							},
+							axisLabel: {
+								formatter: '{value} ml'
+							}
+						},
+						{
+							type: 'value',
+							name: '降水量',
+							min: 0,
+							max: 250,
+							position: 'right',
+							offset: 80,
+							axisLine: {
+								lineStyle: {
+									color: dailyBoxoffice_colors[1]
+								}
+							},
+							axisLabel: {
+								formatter: '{value} ml'
+							}
+						},
+						{
+							type: 'value',
+							name: '温度',
+							min: 0,
+							max: 25,
+							position: 'left',
+							axisLine: {
+								lineStyle: {
+									color: dailyBoxoffice_colors[2]
+								}
+							},
+							axisLabel: {
+								formatter: '{value} °C'
+							}
+						}
+					],
+					series: [
+						{
+							name:'蒸发量',
+							type:'bar',
+							data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+						},
+						{
+							name:'降水量',
+							type:'bar',
+							yAxisIndex: 1,
+							data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+						},
+						{
+							name:'平均温度',
+							type:'line',
+							yAxisIndex: 2,
+							data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+						}
+					]
+				};
+
+				dailyBoxoffice_chart.setOption(dailyBoxoffice_chart_option);
+			}
+		});
+	}//end of GetDailyBoxoffice
 
 
 	//secondary menu tab transition
