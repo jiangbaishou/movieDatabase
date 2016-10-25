@@ -71,7 +71,7 @@ def movie_daily(request, movieId):
 	Given a movieId, return movie daily data in json format, if not exists, return None.
 	"""
 	try:
-		movieDaily = MovieDaily.objects.filter(movieid = int(movieId))
+		movieDaily = MovieDaily.objects.filter(movieid = int(movieId)).order_by('showdate')
 		#we want to merge with MovieDetail in order to get a movie's gross
 		try:
 			movieDetail = MovieDetail.objects.get(pk = int(movieId))

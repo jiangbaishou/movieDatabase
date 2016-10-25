@@ -277,13 +277,13 @@
 					<!-- Set for various tabs. -->
 					<div class="tab" id="tab">
 						<div class="tab-wrap-movie">
-							<div class="ui secondary four item menu" id="tab_transition" style="border-top: 1px solid; border-bottom: 1px solid;">
+							<div class="ui secondary three item menu" id="tab_transition" style="border-top: 1px solid; border-bottom: 1px solid;">
 								<a class="active item" href="#companyInfo">公司</a>
 								<a class="item" href="#dailyBoxoffice">票房</a>
-								<a class="item" href="#dailyShow">排片</a>
 								<a class="item" href="#audAnalysis">用户</a>
 							</div>
 						</div>
+						<!-- Company info. -->
 						<div id="companyInfo" style="display: block;">
 							<div id="company_production">
 								<h2>出品公司</h2>
@@ -292,13 +292,12 @@
 								<h2>发行公司</h2>
 							</div>
 						</div>
+						<!-- Daily boxoffice -->
 						<div id="dailyBoxoffice" style="display: none;">
 							<h2>分天票房，排片和人次数据</h2>	
 							<div id="dailyBoxoffice-chart" style="width: 1000px; height: 400px;"></div>
 						</div>
-						<div id="dailyShow" style="display: none;">
-							
-						</div>
+						<!-- Audience analysis -->
 						<div id="audAnalysis" style="display: none;">		
 							<div class="gender">
 								<h2>性别分布</h2>
@@ -576,11 +575,24 @@
 			url: '/movies/movie_daily/' + {{ movieDetail.movieid }} + '/',
 			cache: false,
 			success: function(data) {
-				console.log(JSON.parse(data['data'])[0]);
+				var dailyBoxoffice = JSON.parse(data['data']);
+				console.log(dailyBoxoffice);
+				var dailyBoxoffice_array = [];
+				var dailyShowDate_array = [];
+				var dailyShowRate_array = [];
+				var dailyBoxRate_array = [];
+
+				for (var i = 0; i < dailyBoxoffice.length; i++){
+					//daily boxoffice
+					dailyBoxoffice_array.push(dailyBoxoffice[i]['fields']['dailyboxoffice']);
+					//showDate
+					dailyShowDate_array.push(dailyBoxoffice[i]['fields']['showdate']);
+					//daily seatrate
+					dailyShowRate_array.push(dailyBoxoffice[i]['fields']['showrate']);
+					//daily box rate
+					dailyBoxRate_array.push(dailyBoxoffice[i]['fields']['boxrate']);
+				}
 				
-				//initialize
-				var dates = [];
-				var boxoffice = [];
 
 				var dailyBoxoffice_chart = echarts.init(document.getElementById('dailyBoxoffice-chart'));
 				var dailyBoxoffice_colors = ['#5793f3', '#d14a61', '#675bba'];
@@ -600,7 +612,7 @@
 						}	
 					},
 					legend: {
-						data:['蒸发量','降水量','平均温度']
+						data:['票房(万)','排片率%','票房占比%']
 					},
 					xAxis: [
 						{
@@ -608,30 +620,30 @@
 							axisTick: {
 								alignWithLabel: true
 							},
-							data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+							data: dailyShowDate_array//['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
 						}
 					],
 					yAxis: [
 						{
 							type: 'value',
-							name: '蒸发量',
+							name: '票房(万)',
 							min: 0,
-							max: 250,
-							position: 'right',
+							//max: 100,
+							position: 'left',
 							axisLine: {
 								lineStyle: {
 									color: dailyBoxoffice_colors[0]
 								}
 							},
 							axisLabel: {
-								formatter: '{value} ml'
+								formatter: '{value} 万'
 							}
 						},
 						{
 							type: 'value',
-							name: '降水量',
+							name: '排片率%',
 							min: 0,
-							max: 250,
+							max: 100,
 							position: 'right',
 							offset: 80,
 							axisLine: {
@@ -640,42 +652,42 @@
 								}
 							},
 							axisLabel: {
-								formatter: '{value} ml'
+								formatter: '{value} %'
 							}
 						},
 						{
 							type: 'value',
-							name: '温度',
+							name: '票房占比%',
 							min: 0,
-							max: 25,
-							position: 'left',
+							max: 100,
+							position: 'right',
 							axisLine: {
 								lineStyle: {
 									color: dailyBoxoffice_colors[2]
 								}
 							},
 							axisLabel: {
-								formatter: '{value} °C'
+								formatter: '{value} %'
 							}
 						}
 					],
 					series: [
 						{
-							name:'蒸发量',
+							name:'票房(万)',
 							type:'bar',
-							data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+							data: dailyBoxoffice_array//[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
 						},
 						{
-							name:'降水量',
-							type:'bar',
+							name:'排片率%',
+							type:'line',
 							yAxisIndex: 1,
-							data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+							data: dailyShowRate_array//[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
 						},
 						{
-							name:'平均温度',
+							name:'票房占比%',
 							type:'line',
 							yAxisIndex: 2,
-							data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+							data: dailyBoxRate_array//[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
 						}
 					]
 				};
